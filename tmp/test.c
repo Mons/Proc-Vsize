@@ -2,6 +2,9 @@
 
 #include <fcntl.h> // For O_RDONLY
 
+# define likely(x)   __builtin_expect(!!(x), 1)
+# define unlikely(x) __builtin_expect(!!(x), 0)
+
 #if __linux__
 #include <unistd.h> // open,read
 
@@ -15,7 +18,7 @@ static size_t getvsize ( pid_t pid ) {
 	//size_t vsize;
 	unsigned rss;
 	
-	if ( snprintf(filename, 80, "/proc/%u/stat", pid) < 0 ) {
+	if ( unlikely( snprintf(filename, 80, "/proc/%u/stat", pid) < 0 ) ) {
 		return -1;
 	}
 	//printf( "read from: %s\n", filename);

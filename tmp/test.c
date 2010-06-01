@@ -56,18 +56,17 @@ static size_t getvsize ( pid_t pid ) {
 }
 
 #else
-#include <sys/param.h> //?
-#include <sys/sysctl.h> //?
-#include <sys/user.h> //?
-#include <unistd.h> //?
+#include <sys/param.h>
+#include <sys/sysctl.h>
+#include <sys/user.h>
 #include <kvm.h>
 #include <limits.h> // for _POSIX2_LINE_MAX
 #if __FreeBSD__ >= 5
-#	define KVM_PID(kp)   &(kp)->ki_pid
-#	define KVM_VSIZE(kp) &(kp)->ki_size
+#	define KVM_PID(kp)   kp->ki_pid
+#	define KVM_VSIZE(kp) kp->ki_size
 #else
-#	define KVM_PID(kp)   &(kp)->kp_proc.p_pid
-#	define KVM_VSIZE(kp) &(kp)->kp_eproc.e_vm.vm_map.size
+#	define KVM_PID(kp)   kp->kp_proc.p_pid
+#	define KVM_VSIZE(kp) kp->kp_eproc.e_vm.vm_map.size
 #endif
 
 static size_t getvsize ( pid_t pid ) {

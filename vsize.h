@@ -5,6 +5,6 @@
 #include <fcntl.h>
 #include <ctype.h>
 
-extern int getvsize ( unsigned int pid );
+extern int getvsize ( int pid );
 
 #endif // _PROC_VSIZE_H_

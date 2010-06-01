@@ -47,6 +47,7 @@ int getvsize ( unsigned int pid ) {
 #if __linux__
 
 #include <unistd.h> // open,read
+#include <stdio.h> //sscanf
 
 int getvsize ( int pid ) {
 	unsigned num;

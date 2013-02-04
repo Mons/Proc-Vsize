@@ -16,7 +16,7 @@ our @ISA = qw(Exporter);
 # If you do not need this, moving things directly into @EXPORT or @EXPORT_OK
 # will save memory.
 our %EXPORT_TAGS = ( 'all' => [ qw(
-	vsize vsize_kb
+	vsize
 ) ] );
 
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
@@ -25,7 +25,7 @@ our @EXPORT = qw(
 	vsize
 );
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 require XSLoader;
 XSLoader::load('Proc::Vsize', $VERSION);
@@ -40,6 +40,7 @@ Proc::Vsize - Get process vsize, X-platform
 
     use Proc::Vsize;
     say "My vsize is ".vsize($$);
+    say "My parent's vsize is ".vsize(getppid());
 
 =head1 DESCRIPTION
 
@@ -51,9 +52,9 @@ If you need to determine vsize of process in a fast and lightweight way.
 
 Exported by default. Return vsize of process in bytes
 
-=head3 vsize_kb($pid)
+=head3 rss($pid)
 
-Not exported by default. Return vsize of process in kbytes
+Not exported by default. Return resident set size of process in bytes
 
 =head1 AUTHOR
 
@@ -61,7 +62,7 @@ Mons Anderson, E<lt>mons@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2010 by Mons Anderson
+Copyright (C) 2010-2013 by Mons Anderson
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.12.0 or,

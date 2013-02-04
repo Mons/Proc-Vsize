@@ -1,8 +1,14 @@
 Changes
+getvsize.c
+getvsize.h
+lib/Proc/Vsize.pm
+LICENSE
 Makefile.PL
 MANIFEST
+MANIFEST.SKIP
+MYMETA.json
+MYMETA.yml
 ppport.h
 README
+t/00-load.t
 Vsize.xs
-t/Proc-Vsize.t
-lib/Proc/Vsize.pm

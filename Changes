@@ -1,5 +1,9 @@
 Revision history for Perl extension Proc::Vsize.
 
+0.02  Mon Feb 4 2013
+	- Fix support for linux with memory consumption > 2Gb
+	- Changed function signature
+
 0.01  Tue Jun  1 15:47:08 2010
 	- original version; created by h2xs 1.23 with options
 		-A -n Proc::Vsize

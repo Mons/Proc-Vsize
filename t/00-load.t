@@ -1,20 +1,14 @@
-# Before `make install' is performed this script should be runnable with
-# `make test'. After `make install' it should work as `perl Proc-Vsize.t'
-
-#########################
-
-# change 'tests => 1' to 'tests => last_test_to_print';
+#!/usr/bin/env perl
 
 use strict;
 use warnings;
 
-use Test::More tests => 3;
+use Test::More tests => 5;
+use Errno;
+
 BEGIN { use_ok('Proc::Vsize') };
 
-#########################
-
-# Insert your test code below, the Test::More module is use()ed here so read
-# its man page ( perldoc Test::More ) for help writing this test script.
-
-is Proc::Vsize::vsize(-1),0;
-ok Proc::Vsize::vsize($$);
+ok !eval { Proc::Vsize::vsize(-1); 1 }, 'vsize of non existent dies';
+is 0+$!, Errno::ESRCH, 'errno ok';
+ok Proc::Vsize::vsize($$), 'vsize of self';
+is Proc::Vsize::vsize(), Proc::Vsize::vsize($$), 'vsize of self eq noargs';

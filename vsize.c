@@ -1,7 +1,9 @@
+#include <stdint.h>
 #include <stdlib.h>
+#include <fcntl.h> // For O_RDONLY
+
 #include "vsize.h"
 
-#include <fcntl.h> // For O_RDONLY
 
 #if __FreeBSD__
 
@@ -18,7 +20,7 @@
 #	define KVM_VSIZE(kp) kp->kp_eproc.e_vm.vm_map.size
 #endif
 
-int getvsize ( unsigned int pid ) {
+size_t getvsize ( unsigned int pid ) {
 //static size_t getvsize ( pid_t pid ) {
 	kvm_t *kd;
 	char errbuf[_POSIX2_LINE_MAX];
@@ -29,12 +31,12 @@ int getvsize ( unsigned int pid ) {
 	kd = kvm_openfiles("/dev/null", "/dev/null", NULL, O_RDONLY, errbuf);
 	if (!kd) {
 		//printf("kvm_openfiles failed: %s\n",errbuf);
-		return -1;
+		return 0;
 	}
 	kip = kvm_getprocs(kd, KERN_PROC_PID, pid, &nr);
 	if (!kip) {
 		//printf ("kvm error: %s\n", kvm_geterr(kd));
-		return -1;
+		return 0;
 	}
 	//printf("ok: %d | %d | size=%d, dsize=%d, ssize=%d\n",pid,kip->ki_pid, kip->ki_size, kip->ki_dsize, kip->ki_ssize);
 	//printf("ok: %d | %d | size=%d\n",pid,kip->kp_proc.p_pid, KVM_VSIZE(kip));
@@ -49,23 +51,23 @@ int getvsize ( unsigned int pid ) {
 #include <unistd.h> // open,read
 #include <stdio.h> //sscanf
 
-int getvsize ( int pid ) {
+size_t getvsize ( int pid ) {
 	unsigned num;
 	static char filename[80];
 	static char buffer[1024];
 	char *buf;
 	int fd, nread, len;
-	long unsigned int vsize;
-	//size_t vsize;
-	unsigned rss;
+	//long unsigned int vsize;
+	size_t vsize;
+	size_t  rss;
 	
 	if ( snprintf(filename, 80, "/proc/%u/stat", pid) < 0 ) {
-		return -1;
+		return 0;
 	}
 	//printf( "read from: %s\n", filename);
 	
 	fd = open(filename, O_RDONLY, 0);
-	if( fd == -1 ) return -1;
+	if( fd == -1 ) return 0;
 	len = 1023;
 	buf = buffer;
 	while (( nread = read(fd,buf,len)) > 0) {
@@ -73,32 +75,32 @@ int getvsize ( int pid ) {
 		buf += nread;
 	}
 	close(fd);
-	if( len == 1023 ) return -1;
+	if( len == 1023 ) return 0;
 	*buf = '\0';
 	while ( buf > buffer + 2 && *( buf - 2 ) != ')' ) buf--;
 	
-	//printf("read %s\n",  buf);
+	//warn("read %s\n",  buf);
 	num = sscanf(buf,
 		"%*c "
-		"%*d %*d %*d %*d %*d "
-		"%*u %*u %*u %*u %*u "
-		"%*u %*u %*u %*u "  /* utime stime cutime cstime */
-		"%*d %*d "
-		"%*d "
-		"%*d "
-		"%*u "  /* start_time */
-		"%lu "  /* vsize */
-		"%d "   /* rss */
+		"%*s %*s %*s %*s %*s "
+		"%*s %*s %*s %*s %*s "
+		"%*s %*s %*s %*s "  /* utime stime cutime cstime */
+		"%*s %*s "
+		"%*s "
+		"%*s "
+		"%*s "  /* start_time */
+		"%zu "  /* vsize */
+		"%zu "  /* rss */
 		,
 		&vsize, &rss
 	);
-	//printf("got %d from sscanf: vsize=%lu + %u\n", num, vsize, rss);
-	return (int) vsize;
+	printf("got %d from sscanf: vsize=%lu + %u\n", num, vsize, rss);
+	return vsize;
 }
 
 #else
 
-int getvsize ( int pid ) { return -1 }
+size_t getvsize ( int pid ) { return 0 }
 
 #endif // __linux__
 #endif
